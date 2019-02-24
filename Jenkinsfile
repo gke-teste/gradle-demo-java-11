@@ -1,6 +1,5 @@
 pipeline {
   agent {
-    label "jenkins-gradle"
     docker {
         image 'openjdk:11-jdk-slim'
         label 'openjdk'

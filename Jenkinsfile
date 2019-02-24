@@ -1,9 +1,6 @@
 pipeline {
   agent {
-    docker {
-        image 'openjdk:11-jdk-slim'
-        label 'openjdk'
-    }
+    label 'custom-java11'
   }
   environment {
     ORG = 'gke-teste'
@@ -21,7 +18,7 @@ pipeline {
         HELM_RELEASE = "$PREVIEW_NAMESPACE".toLowerCase()
       }
       steps {
-        container('openjdk') {
+        container('java11') {
           sh "./gradlew clean build"
           sh "export VERSION=$PREVIEW_VERSION && skaffold build -f skaffold.yaml"
           sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:$PREVIEW_VERSION"
@@ -37,7 +34,7 @@ pipeline {
         branch 'master'
       }
       steps {
-        container('openjdk') {
+        container('java11') {
 
           // ensure we're not on a detached head
           sh "git checkout master"
@@ -58,7 +55,7 @@ pipeline {
         branch 'master'
       }
       steps {
-        container('openjdk') {
+        container('java11') {
           dir('./charts/gradle-demo-java-11') {
             sh "jx step changelog --version v\$(cat ../../VERSION)"
 

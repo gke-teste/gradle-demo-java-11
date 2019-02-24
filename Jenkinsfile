@@ -34,7 +34,7 @@ pipeline {
         branch 'master'
       }
       steps {
-        container('gradle') {
+        container('openjdk:11-jdk-slim') {
 
           // ensure we're not on a detached head
           sh "git checkout master"
@@ -44,7 +44,7 @@ pipeline {
           // so we can retrieve the version in later steps
           sh "echo \$(jx-release-version) > VERSION"
           sh "jx step tag --version \$(cat VERSION)"
-          sh "gradle clean build"
+          sh "./gradlew clean build"
           sh "export VERSION=`cat VERSION` && skaffold build -f skaffold.yaml"
           sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:\$(cat VERSION)"
         }
@@ -55,7 +55,7 @@ pipeline {
         branch 'master'
       }
       steps {
-        container('gradle') {
+        container('openjdk:11-jdk-slim') {
           dir('./charts/gradle-demo-java-11') {
             sh "jx step changelog --version v\$(cat ../../VERSION)"
 

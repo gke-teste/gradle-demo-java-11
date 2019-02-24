@@ -1,6 +1,6 @@
 pipeline {
   agent {
-    label "jenkins-gradle"
+    label "jenkins-maven-java11"
   }
   environment {
     ORG = 'gke-teste'
@@ -18,8 +18,8 @@ pipeline {
         HELM_RELEASE = "$PREVIEW_NAMESPACE".toLowerCase()
       }
       steps {
-        container('gradle') {
-          sh "gradle clean build"
+        container('maven') {
+          sh "./gradlew clean build"
           sh "export VERSION=$PREVIEW_VERSION && skaffold build -f skaffold.yaml"
           sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:$PREVIEW_VERSION"
           dir('./charts/preview') {
@@ -34,7 +34,7 @@ pipeline {
         branch 'master'
       }
       steps {
-        container('gradle') {
+        container('maven') {
 
           // ensure we're not on a detached head
           sh "git checkout master"
@@ -44,7 +44,7 @@ pipeline {
           // so we can retrieve the version in later steps
           sh "echo \$(jx-release-version) > VERSION"
           sh "jx step tag --version \$(cat VERSION)"
-          sh "gradle clean build"
+          sh "./gradlew clean build"
           sh "export VERSION=`cat VERSION` && skaffold build -f skaffold.yaml"
           sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:\$(cat VERSION)"
         }
@@ -55,7 +55,7 @@ pipeline {
         branch 'master'
       }
       steps {
-        container('gradle') {
+        container('maven') {
           dir('./charts/gradle-demo-java-11') {
             sh "jx step changelog --version v\$(cat ../../VERSION)"
 

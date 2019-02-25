@@ -23,6 +23,7 @@
         <!--/*@thymesVar id="greeting" type="com.example.gradledemojava11.model.Greeting"*/-->
         <form action="#" th:action="@{/greeting}" th:object="${greeting}" method="post">
             <p>Name: <input type="text" th:field="*{name}" /></p>
+            <p>Age: <input type="text" th:field="*{age}" /></p>
             <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
         </form>
     </div>
